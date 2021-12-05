@@ -1,31 +1,46 @@
 use std::fs::File;
 use std::io::*;
 
-fn main() {
-    println!("{}", count("/Users/cal/dev/aoc2021/p1/input/depth.txt"));
+#[derive(Debug)]
+struct Point {
+    x: i32,
+    y: i32,
+    aim: i32,
 }
 
-fn forward(amount: i32) -> i32 {}
+fn main() {
+    println!("{}", count("/Users/cal/dev/aoc2021/input/instructions"));
+}
+
+fn forward(p: &mut Point, amount: i32) {
+    println!("{:?}", p);
+    p.x += amount;
+    p.y += p.aim * amount;
+}
+
+fn up(p: &mut Point, amount: i32) {
+    p.aim -= amount
+}
+
+fn down(p: &mut Point, amount: i32) {
+    p.aim += amount
+}
 
 fn count(file: &str) -> i32 {
     let depth_file = File::open(file).unwrap();
     let reader = BufReader::new(depth_file);
-    let mut current_line;
-    let mut prev_sum = 0;
-    let mut sum;
-    let mut count = -3;
-    let mut prev_line = -1;
-    let mut prev_prev_line = -1;
+    let mut p = Point { x: 0, y: 0, aim: 0 };
 
     for line in reader.lines() {
-        current_line = line.unwrap().parse::<i32>().unwrap();
-        sum = current_line + prev_line + prev_prev_line;
-        if sum > prev_sum {
-            count += 1;
-        }
-        prev_sum = sum;
-        prev_prev_line = prev_line;
-        prev_line = current_line;
+        let l = line.unwrap();
+        let instr: Vec<&str> = l.split(' ').collect();
+        match instr[..] {
+            ["forward", x] => forward(&mut p, x.parse::<i32>().unwrap()),
+            ["down", x] => down(&mut p, x.parse::<i32>().unwrap()),
+            ["up", x] => up(&mut p, x.parse::<i32>().unwrap()),
+            _ => eprintln!("whoops"),
+        };
     }
-    return count;
+
+    return p.x * p.y;
 }
