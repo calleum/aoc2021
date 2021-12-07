@@ -1,57 +1,62 @@
-use std::fs::File;
-use std::io::*;
 
-#[derive(Debug)]
-struct Point {
-    x: i32,
-    y: i32,
-    aim: i32,
+fn read_input1() -> String {
+    include_str!("../input/input1.txt").to_string()
+}
+
+fn read_input2() -> String {
+    include_str!("../input/input2.txt").to_string()
+}
+
+fn solve_1(input: &str) -> isize {
+    let gamma = input
+        .lines()
+        .filter_map(|m| m.ok())
+        .map(|l| usize::from_str_radix(l, 2).unwrap())
+        .fold(vec![0; 12], |num, bits| 
+            num
+              );
+   todo!() 
+}
+
+fn solve_2(input: &str) -> isize {
+   todo!() 
 }
 
 fn main() {
-    println!("{}", count("/Users/cal/dev/aoc2021/input/instructions"));
+    println!("Solution 1: {:?}", solve_1(&read_input1()));
+    println!("Solution 2: {:?}", solve_2(&read_input2()));
 }
 
-fn forward(p: &mut Point, amount: i32) {
-    println!("{:?}", p);
-    p.x += amount;
-    p.y += p.aim * amount;
-}
+#[cfg(test)]
+mod test {
+    use crate::{solve_1, solve_2};
 
-fn up(p: &mut Point, amount: i32) {
-    p.aim -= amount
-}
+    const TEST: &str = "10100
+    10110
+    00111
+    10101
+    01111
+    11110
+    11100
+    10111
+    11001
+    00010
+    10000
+    01010";
 
-fn down(p: &mut Point, amount: i32) {
-    p.aim += amount
-}
-
-fn lines_iter(b: BufReader<File>, mut p: &Point, f: &mut dyn FnMut(String, &Point)) {
-    let mut i = 0;
-    for line in b.lines() {
-        i += 1;
-        let l = line.unwrap();
-        f(l, p);
+    #[test]
+    fn test_first_problem() {
+        let input = TEST;
+        let expected = 198;
+        let actual = solve_1(&input);
+        assert_eq!(expected, actual);
     }
-}
 
-fn match_instr(l: String, mut p: &Point) {
-    let instr: Vec<&str> = l.split(' ').collect();
-    match instr[..] {
-        ["forward", x] => forward(&mut p, x.parse::<i32>().unwrap()),
-        ["down", x] => down(&mut p, x.parse::<i32>().unwrap()),
-        ["up", x] => up(&mut p, x.parse::<i32>().unwrap()),
-        _ => eprintln!("whoops"),
-    };
-}
-
-fn count(file: &str) -> i32 {
-    let depth_file = File::open(file).unwrap();
-    let b = BufReader::new(depth_file);
-    let mut p = Point { x: 0, y: 0, aim: 0 };
-    let mut i = 0;
-
-    lines_iter(b, &p, match_instr);
-
-    return p.x * p.y;
+    #[test]
+    fn test_second_problem() {
+        let input = TEST;
+        let expected = 230;
+        let actual = solve_2(&input);
+        assert_eq!(expected, actual);
+    }
 }
